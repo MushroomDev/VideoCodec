@@ -1,2 +1,16 @@
-# VideoCodec
-Video  Formate Transform 
+# CodecFlow
+
+macOS 专业视频格式转换工具 — 全格式、高速、安全、隐私优先。
+
+## 核心特色
+
+- **全格式支持** — 30+ 容器格式，覆盖 H.264 / H.265 / VP9 / AV1 / ProRes / DNxHD 等主流及专业编解码器
+- **AES 视频加密** — 内置 AES-128 / AES-256 加解密，保护敏感视频内容
+- **智能硬件加速** — Apple Silicon 原生优化，VideoToolbox 自动启用，转码速度提升 3-5 倍
+- **字幕与多音轨** — 软字幕保留、硬字幕烧录，支持 SRT / ASS / PGS 格式
+- **专业参数控制** — 码率/CRF 双模式、GOP 调节、编码预设调优
+- **100% 离线** — 数据永不出本机，一次性买断，无订阅无广告
+
+## 在线文档
+
+访问 [CodecFlow 产品文档与答疑](https://swain.github.io/VideoCodec/) 获取完整功能说明和常见问题解答。

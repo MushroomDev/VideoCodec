@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodecFlow — macOS 专业视频格式转换工具</title>
+  <meta name="description" content="CodecFlow 是 macOS 平台的专业视频转码工具，支持全格式转换、硬件加速、视频加密解密、字幕处理，隐私优先完全离线。">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-hover: #21262d;
+      --border: #30363d;
+      --primary: #58a6ff;
+      --primary-dim: #1f6feb;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --accent-green: #3fb950;
+      --accent-purple: #bc8cff;
+      --accent-orange: #d2991d;
+      --radius: 8px;
+      --max-width: 960px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13, 17, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px;
+    }
+    .nav-logo {
+      font-size: 20px; font-weight: 700;
+      color: var(--primary); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo .icon { font-size: 26px; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none; font-size: 14px;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center; padding: 80px 24px 60px;
+      max-width: 720px; margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 48px; font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .hero .subtitle {
+      font-size: 20px; color: var(--text-dim); margin-bottom: 32px;
+    }
+    .badge-row {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .badge.m1 { border-color: #1f6feb44; color: var(--primary); }
+    .badge.m2 { border-color: #3fb95044; color: var(--accent-green); }
+    .badge.m3 { border-color: #d2991d44; color: var(--accent-orange); }
+
+    /* ── Sections ── */
+    .section {
+      max-width: var(--max-width);
+      margin: 0 auto; padding: 48px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .section h2 {
+      font-size: 28px; font-weight: 700; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section .desc {
+      color: var(--text-dim); font-size: 15px; margin-bottom: 32px;
+    }
+
+    /* ── Feature Grid ── */
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .feature-card:hover { border-color: var(--primary-dim); background: var(--surface-hover); }
+    .feature-card .icon { font-size: 28px; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 16px; margin-bottom: 6px; }
+    .feature-card p { font-size: 13px; color: var(--text-dim); }
+
+    /* ── Format Table ── */
+    .format-table {
+      width: 100%; border-collapse: collapse; font-size: 14px;
+    }
+    .format-table th, .format-table td {
+      padding: 10px 16px; border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .format-table th {
+      font-weight: 600; color: var(--text-dim); font-size: 12px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .format-table tr:hover { background: var(--surface-hover); }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+    .tag.green { background: #2ea04333; color: var(--accent-green); }
+    .tag.blue { background: #1f6feb33; color: var(--primary); }
+    .tag.yellow { background: #d2991d33; color: var(--accent-orange); }
+
+    /* ── FAQ ── */
+    .faq-list { display: flex; flex-direction: column; gap: 4px; }
+    .faq-item { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .faq-q {
+      width: 100%; background: var(--surface); border: none; color: var(--text);
+      padding: 16px 20px; text-align: left; font-size: 15px; font-family: inherit;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; transition: background 0.15s;
+    }
+    .faq-q:hover { background: var(--surface-hover); }
+    .faq-q .arrow { transition: transform 0.2s; font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
+    .faq-item.open .faq-q .arrow { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    .faq-item.open .faq-a { max-height: 600px; }
+    .faq-a-inner {
+      padding: 0 20px 20px 20px; font-size: 14px; color: var(--text-dim); line-height: 1.8;
+    }
+    .faq-a-inner code {
+      background: var(--surface-hover); padding: 2px 6px; border-radius: 4px;
+      font-size: 13px; color: var(--accent-orange);
+    }
+    .faq-a-inner pre {
+      background: var(--surface-hover); padding: 12px 16px; border-radius: 6px;
+      overflow-x: auto; margin: 8px 0; font-size: 13px; color: var(--accent-green);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; padding: 40px 24px;
+      border-top: 1px solid var(--border); color: var(--text-dim); font-size: 13px;
+    }
+    .footer a { color: var(--primary); text-decoration: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 32px; }
+      .hero .subtitle { font-size: 16px; }
+      .nav-links { display: none; }
+      .section h2 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#top"><span class="icon">🔄</span>CodecFlow</a>
+    <ul class="nav-links">
+      <li><a href="#features">功能特性</a></li>
+      <li><a href="#formats">支持格式</a></li>
+      <li><a href="#faq">常见问题</a></li>
+      <li><a href="#unique">专业特色</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero" id="top">
+  <h1>CodecFlow</h1>
+  <p class="subtitle">macOS 专业视频格式转换工具 — 全格式、高速、安全</p>
+  <div class="badge-row">
+    <span class="badge m1">🍎 Apple Silicon ARM64</span>
+    <span class="badge m2">⚡ 硬件加速 VideoToolbox</span>
+    <span class="badge m3">🔒 视频加密 / 解密</span>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="section" id="features">
+  <h2>✨ 功能特性</h2>
+  <p class="desc">不只是格式转换 — CodecFlow 为 macOS 用户提供一站式视频处理方案，覆盖转码、加密、字幕、专业参数调节。</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">🎬</div>
+      <h3>全格式兼容</h3>
+      <p>支持 MP4 / MKV / MOV / AVI / WebM / FLV / TS 等 30+ 容器格式，H.264 / H.265 / VP9 / AV1 / ProRes 等全部主流编解码器。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">⚡</div>
+      <h3>硬件加速</h3>
+      <p>Apple Silicon M1/M2/M3/M4 原生优化，VideoToolbox 硬件编解码自动启用，转码速度提升 3-5 倍，同时大幅降低发热。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📦</div>
+      <h3>智能批量处理</h3>
+      <p>拖入整个文件夹，智能排队转换。支持暂停/恢复/跳过，自动按 CPU 核心数调度任务，不卡顿不阻塞。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🎚️</div>
+      <h3>专业参数调节</h3>
+      <p>码率、分辨率、帧率、GOP、CRF、编码预设级别等全部开放，满足从快速分享到视觉无损存档的各种需求。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💬</div>
+      <h3>字幕完整支持</h3>
+      <p>保留软字幕、烧录硬字幕，支持 SRT / ASS / PGS 等多种格式，多音轨随心选择。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🖥️</div>
+      <h3>纯正 macOS 体验</h3>
+      <p>原生 AppKit 界面，深色模式、沙盒安全、拖拽导入、Touch Bar 支持，不是 Electron 套壳。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Supported Formats ── -->
+<section class="section" id="formats">
+  <h2>📋 支持格式</h2>
+  <p class="desc">CodecFlow 覆盖 30+ 容器格式与全系列主流编解码器，无论是日常分享还是专业后期，都能胜任。</p>
+
+  <h3 style="font-size:17px; margin-bottom:12px; color: var(--primary);">容器格式</h3>
+  <table class="format-table">
+    <thead>
+      <tr><th>格式</th><th>扩展名</th><th>输入</th><th>输出</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>MP4</td><td>.mp4</td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>最通用格式</td></tr>
+      <tr><td>MKV</td><td>.mkv</td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>多音轨/字幕</td></tr>
+      <tr><td>MOV</td><td>.mov</td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>Apple 生态首选</td></tr>
+      <tr><td>WebM</td><td>.webm</td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>Web 优化</td></tr>
+      <tr><td>AVI</td><td>.avi</td><td><span class="tag green">支持</span></td><td><span class="tag yellow">有限</span></td><td>老旧格式</td></tr>
+      <tr><td>FLV</td><td>.flv</td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td></td></tr>
+      <tr><td>TS / M2TS</td><td>.ts / .m2ts</td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>蓝光传输流</td></tr>
+      <tr><td>GIF</td><td>.gif</td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>动画 GIF 生成</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:17px; margin:28px 0 12px; color: var(--accent-purple);">视频编解码器</h3>
+  <table class="format-table">
+    <thead>
+      <tr><th>编解码器</th><th>类型</th><th>编码</th><th>解码</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>H.264 / AVC</td><td><span class="tag blue">主流</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>通用兼容性最佳</td></tr>
+      <tr><td>H.265 / HEVC</td><td><span class="tag blue">主流</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>高效压缩</td></tr>
+      <tr><td>VP9</td><td><span class="tag blue">主流</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>YouTube 首选</td></tr>
+      <tr><td>AV1</td><td><span class="tag blue">主流</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>下一代编码</td></tr>
+      <tr><td>ProRes</td><td><span class="tag yellow">专业</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>Apple 专业编码</td></tr>
+      <tr><td>DNxHD / DNxHR</td><td><span class="tag yellow">专业</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>Avid 格式</td></tr>
+      <tr><td>VP8</td><td><span class="tag blue">主流</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td></td></tr>
+      <tr><td>MPEG-4 / MPEG-2</td><td><span class="tag blue">主流</span></td><td><span class="tag green">支持</span></td><td><span class="tag green">支持</span></td><td>DVD 兼容</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── Unique Features ── -->
+<section class="section" id="unique">
+  <h2>🔬 专业特色功能</h2>
+  <p class="desc">这些是 CodecFlow 区别于其他转码工具的核心竞争力，专为有更高要求的用户打造。</p>
+
+  <!-- Feature #1: Encryption -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🔒</span> 视频加密与解密</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        市场上绝大多数转码工具不具备加密能力。CodecFlow 内置 <strong>AES-128</strong> 和 <strong>AES-256</strong> 视频加解密引擎，让你在转换格式的同时对视频内容进行加密保护。
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li>加密密钥与 IV 由你完全掌控，不上传到任何服务器</li>
+        <li>加密后的视频可被 VLC / IINA / mpv 等主流播放器解密播放</li>
+        <li>适合私密影像存档、版权保护分发等场景</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🔑</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:15px;">AES-256</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">军事级加密标准</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">AES-128</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">高性能日常加密</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #2: Hardware Acceleration -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap; flex-direction:row-reverse;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">⚡</span> 智能硬件加速</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        在 Apple Silicon 芯片上，CodecFlow 自动调用 <strong>VideoToolbox</strong> 硬件编解码器，无需手动配置。相比纯软件编码，速度最高可提升 <strong>5 倍</strong>，且 Mac 不发烫、风扇不狂转。
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li>自动检测硬件能力，智能选择最优编码器</li>
+        <li>支持硬件加速 + 软件编码混合模式：解码走硬件，编码按需选择</li>
+        <li>Intel Mac 上同样支持 Quick Sync 硬件加速</li>
+        <li>不适合硬件加速的场景（如追求极致压缩率）可手动切换纯软件编码</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🚀</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:24px;">3-5x</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">转码速度提升</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">M1 ~ M4</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">全系芯片原生支持</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #3: Subtitle & Multi-track -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">💬</span> 字幕烧录与多音轨管理</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        很多轻量级转换工具直接丢弃字幕和额外音轨。CodecFlow 完整保留这些信息，并提供灵活的处置选项。
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li><strong>保留软字幕</strong>：字幕作为独立轨道保留，播放器可随时开关</li>
+        <li><strong>烧录硬字幕</strong>：将字幕永久嵌入视频画面，适合社交媒体分发</li>
+        <li>支持 SRT / ASS / PGS / mov_text 等主流字幕格式</li>
+        <li>多音轨可视化管理：中文、英文、导演评论等音轨自由勾选</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">📝</div>
+      <div style="color:var(--accent-purple); font-weight:600; font-size:15px;">SRT · ASS · PGS</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">全格式字幕</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">多音轨</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">自由选择与混流</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #4: Professional Codecs -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap; flex-direction:row-reverse;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🎞️</span> 专业格式全覆盖</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        绝大多数视频转换工具只覆盖消费级格式。CodecFlow 额外支持 <strong>ProRes、DNxHD/HR、AV1</strong> 等专业和下一代编码，满足影像后期、存档和前瞻性需求。
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li><strong>Apple ProRes</strong>（422/4444/XQ）：Final Cut Pro 后期工作流首选</li>
+        <li><strong>Avid DNxHD / DNxHR</strong>：广播和专业制作行业标准</li>
+        <li><strong>AV1 编解码</strong>：下一代开放编码标准，相同画质体积减半</li>
+        <li><strong>GIF 动画生成</strong>：视频片段一键转高质量 GIF</li>
+        <li><strong>WebM (VP8/VP9)</strong>：面向 Web 的开放格式，替代 GIF 的更优选择</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🎯</div>
+      <div style="color:var(--accent-purple); font-weight:600; font-size:15px;">ProRes 422/4444</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Apple 专业编码</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">DNxHD · AV1</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">广播级 + 下一代</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #5: Fine-grained Control -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🎚️</span> 两种编码模式：码率 vs 质量</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        大多数工具只给你几个模糊的"高/中/低"画质选项。CodecFlow 提供专业的双模式编码控制。
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li><strong>目标码率模式 (ABR/VBR)</strong>：精确控制输出文件大小，适合有带宽或存储限制的场景</li>
+        <li><strong>恒定质量模式 (CRF)</strong>：你只管设定质量，编码器自动分配码率。CRF 18 ≈ 视觉无损</li>
+        <li><strong>编码预设</strong>：ultrafast → veryslow 共 10 档，用时间换质量或反之，完全由你决定</li>
+        <li><strong>GOP / 关键帧间隔</strong>：控制视频的随机访问性能，适合流媒体场景调优</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">📐</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:15px;">码率模式</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">精确控制文件大小</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">CRF 模式</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">恒定质量 · 视觉无损</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #6: Privacy -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; flex-direction:row-reverse;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🛡️</span> 隐私优先 · 完全离线</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        CodecFlow 是 <strong>100% 离线</strong>运行的本地应用。你的视频文件从始至终都在你的 Mac 上，不会上传到任何云端服务器。
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li>无需注册账号、无需联网即可使用全部功能</li>
+        <li>macOS 沙盒机制确保 App 无法访问未经你授权的文件</li>
+        <li>加密密钥仅在本地使用，绝不上传或同步</li>
+        <li>无埋点、无遥测、无广告 — 你买的是一次性付费的完整产品</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🏠</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:15px;">100% 离线</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">数据永不出本机</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">一次性买断</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">无订阅 · 无广告</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── FAQ ── -->
+<section class="section" id="faq">
+  <h2>❓ 常见问题</h2>
+  <p class="desc">点击问题展开答案。如果这里没有解决你的疑问，欢迎提交 Issue。</p>
+
+  <div class="faq-list">
+
+    <!-- 安装 -->
+    <div class="faq-item">
+      <button class="faq-q"><span>系统要求是什么？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p><strong>最低要求：</strong></p>
+        <ul>
+          <li>macOS 12.0 Monterey 及以上</li>
+          <li>Apple Silicon (M1 / M2 / M3 / M4) 或 Intel Mac</li>
+          <li>200MB 可用磁盘空间</li>
+        </ul>
+        <p><strong>推荐配置：</strong></p>
+        <ul>
+          <li>macOS 14.0 Sonoma 及以上</li>
+          <li>Apple Silicon M2 及以上（获得最佳 VideoToolbox 硬件加速）</li>
+        </ul>
+        <p>CodecFlow 对 Apple Silicon 做了原生优化，在 Apple Silicon 设备上性能最佳。Intel Mac 同样完全兼容。</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>CodecFlow 支持 Rosetta 模式吗？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>CodecFlow 是通用二进制（Universal Binary），同时包含 ARM64 和 x86_64 架构。</p>
+        <p>在 Apple Silicon Mac 上以原生 ARM64 模式运行，<strong>不会</strong>通过 Rosetta 转译，可以获得最佳性能和 VideoToolbox 硬件加速。</p>
+      </div></div>
+    </div>
+
+    <!-- 转换问题 -->
+    <div class="faq-item">
+      <button class="faq-q"><span>为什么转换后视频没有声音？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>通常有以下原因：</p>
+        <ol>
+          <li><strong>音轨未被选择</strong>：检查设置面板的"音频"标签页，确认已勾选要保留的音轨。</li>
+          <li><strong>音频编码不兼容</strong>：某些源文件的音频编码（如 DTS / AC-3 / E-AC3）在目标容器中不被支持。建议输出时选择 AAC 编码。</li>
+          <li><strong>源文件音轨问题</strong>：极少数情况下源文件本身音轨损坏。尝试用其他播放器（如 IINA）确认源音频是否正常。</li>
+        </ol>
+        <p>如果问题仍然存在，请在输出格式中选择 <code>MKV</code> 容器搭配 <code>AAC</code> 音频编码，这是兼容性最高的组合。</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>转换后画质变差了怎么办？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>画质下降通常是因为编码参数设置过低。建议：</p>
+        <ul>
+          <li><strong>提高码率</strong>：在"视频设置"中调高目标码率。1080p 建议 8-12 Mbps，4K 建议 30-50 Mbps。</li>
+          <li><strong>使用 CRF 模式</strong>：切换到 CRF（恒定质量）模式，推荐值 18-23（数值越小质量越好）。</li>
+          <li><strong>选择更慢的预设</strong>：编码预设从“veryfast”切换到“medium”或“slow”可显著提升画质，代价是编码时间增加。</li>
+          <li><strong>保持原始分辨率</strong>：除非确有必要，否则不要修改分辨率。</li>
+        </ul>
+        <p>专业提示：CRF 18 + slow 预设 ≈ 视觉无损，非常适合存档场景。</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>支持字幕保留吗？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>CodecFlow 支持以下字幕处理方式：</p>
+        <ul>
+          <li><strong>保留内嵌字幕流</strong>：输出 MKV 容器时，可保留源文件的 SRT / ASS / PGS 字幕流。</li>
+          <li><strong>烧录硬字幕</strong>：将字幕永久嵌入视频画面，适合分享到不支持软字幕的平台。</li>
+          <li><strong>软字幕</strong>：MP4 容器支持 mov_text 字幕（兼容性一般），MKV 容器支持几乎所有字幕格式。</li>
+        </ul>
+        <p>最佳兼容方案：输出 MKV 并保留原始字幕流，或烧录为硬字幕输出 MP4。</p>
+      </div></div>
+    </div>
+
+    <!-- 性能 -->
+    <div class="faq-item">
+      <button class="faq-q"><span>VideoToolbox 硬件加速何时生效？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>VideoToolbox 硬件加速在以下条件<strong>全部满足</strong>时自动启用：</p>
+        <ol>
+          <li>设备为 Apple Silicon (M1/M2/M3/M4) 或 Intel Mac 支持 Quick Sync</li>
+          <li>输出编码选择 <code>H.264</code> 或 <code>H.265 (HEVC)</code></li>
+          <li>在设置中开启"优先使用硬件加速"选项</li>
+        </ol>
+        <p>硬件加速可提升 3-5 倍编码速度，同时大幅降低 CPU 占用和发热。注意：硬件编码的压缩率通常略低于纯软件编码（x264/x265），适合速度优先的场景。</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>批量转换时 CPU 占用太高怎么办？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>有几种方式控制 CPU 占用：</p>
+        <ul>
+          <li>在设置中调整"并行任务数"，默认为自动（CPU 核心数），可手动降至 1-2。</li>
+          <li>开启 VideoToolbox 硬件加速，将编码负载转移到专用硬件。</li>
+          <li>使用更快的编码预设（ultrafast / superfast / veryfast），降低每帧编码复杂度。</li>
+        </ul>
+        <p>CodecFlow 的任务调度器会自动平衡系统负载，你也可以在 Activity Monitor 中限制 App 的 CPU 优先级。</p>
+      </div></div>
+    </div>
+
+    <!-- 加密 -->
+    <div class="faq-item">
+      <button class="faq-q"><span>加密功能如何工作？安全吗？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>CodecFlow 使用行业标准的 AES-128 或 AES-256 加密方案：</p>
+        <ul>
+          <li><strong>AES-128</strong>：128 位密钥，速度较快，适合日常使用。</li>
+          <li><strong>AES-256</strong>：256 位密钥，安全性更高，适合敏感内容。</li>
+          <li>加密密钥和 IV（初始化向量）由用户自定义输入。</li>
+          <li>加密后的视频需要通过相同密钥在 CodecFlow 或其他支持 AES 解密的播放器中打开。</li>
+        </ul>
+        <p><strong>⚠️ 注意</strong>：密钥丢失后将无法恢复视频内容。请妥善保管密钥，CodecFlow 不会以任何形式存储或上传你的密钥。</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>加密视频兼容其他播放器吗？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>使用 AES 加密的 MP4/MKV 文件兼容以下播放器：</p>
+        <ul>
+          <li>✅ VLC Media Player</li>
+          <li>✅ IINA (macOS)</li>
+          <li>✅ mpv</li>
+          <li>✅ 支持 AES 解密的命令行工具</li>
+          <li>❌ QuickTime Player（不支持加密流）</li>
+          <li>❌ Safari 内嵌播放器</li>
+        </ul>
+        <p>播放时需要提供解密密钥。通常通过 HLS Key 文件或 m3u8 playlist 方式传递密钥。</p>
+      </div></div>
+    </div>
+
+    <!-- 错误排查 -->
+    <div class="faq-item">
+      <button class="faq-q"><span>转换失败，提示"Unsupported codec"怎么办？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>这个错误表示源文件使用的编解码器较为罕见。请检查：</p>
+        <ol>
+          <li>确认安装的是 CodecFlow 完整版（非 Lite 版），完整版内置了全系列编解码支持。</li>
+          <li>如果是极少见的私有格式（如某些监控录像、专业相机 RAW），可能需要先转换为中间格式。</li>
+          <li>尝试用 MediaInfo 工具查看源文件的具体编码信息，然后将报错信息和编码信息一起提交 Issue，我们会评估是否在后续版本中加入支持。</li>
+        </ol>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>输出文件比原文件还大？</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>这在以下情况常见：</p>
+        <ul>
+          <li>源文件使用了高压缩率编码（如 H.265 低码率），输出选择了 H.264 或较高码率。</li>
+          <li>源文件是已经高度压缩的流媒体视频，重新编码时设置了过高码率。</li>
+        </ul>
+        <p>解决方法：</p>
+        <ul>
+          <li>降低目标码率到源文件的 60%-80%。</li>
+          <li>使用 H.265 (HEVC) 编码替代 H.264，相同画质下体积可减少约 40%。</li>
+          <li>开启 CRF 模式，设定为 20-26 区间自动平衡质量和体积。</li>
+        </ul>
+      </div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <p>CodecFlow · macOS 专业视频格式转换工具</p>
+  <p style="margin-top:8px;">隐私优先 · 完全离线 · 一次性买断</p>
+</footer>
+
+<script>
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.parentElement;
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+    // Toggle clicked
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
