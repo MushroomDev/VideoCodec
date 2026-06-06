@@ -48,11 +48,20 @@
       color: var(--primary); text-decoration: none;
       display: flex; align-items: center; gap: 8px;
     }
+    .nav-links {
+      display: flex; gap: 20px; align-items: center;
+    }
     .nav-back {
       color: var(--text-dim); text-decoration: none; font-size: 14px;
       transition: color 0.15s;
     }
     .nav-back:hover { color: var(--text); }
+    .nav-lang {
+      color: var(--primary); text-decoration: none; font-size: 13px;
+      border: 1px solid var(--primary-dim); border-radius: 4px;
+      padding: 2px 8px; transition: background 0.15s;
+    }
+    .nav-lang:hover { background: #1f6feb22; }
 
     .hero {
       text-align: center; padding: 64px 24px 40px;
@@ -124,7 +133,10 @@
 <nav class="nav">
   <div class="nav-inner">
     <a class="nav-logo" href="./"><span>🔄</span>CodecFlow</a>
-    <a class="nav-back" href="./">← 返回首页</a>
+    <div class="nav-links">
+      <a class="nav-lang" href="./privacy_en.html">English</a>
+      <a class="nav-back" href="./">← 返回首页</a>
+    </div>
   </div>
 </nav>
 
@@ -199,7 +211,7 @@
 </div>
 
 <footer class="footer">
-  <p>CodecFlow · 隐私优先 · 完全离线</p>
+  <p>CodecFlow · 隐私优先 · 完全离线 · <a href="./privacy_en.html">English Version</a></p>
 </footer>
 
 </body>

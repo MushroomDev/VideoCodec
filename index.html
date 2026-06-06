@@ -51,12 +51,19 @@
       display: flex; align-items: center; gap: 8px;
     }
     .nav-logo .icon { font-size: 26px; }
+    .nav-right { display: flex; align-items: center; gap: 24px; }
     .nav-links { display: flex; gap: 24px; list-style: none; }
     .nav-links a {
       color: var(--text-dim); text-decoration: none; font-size: 14px;
       transition: color 0.15s;
     }
     .nav-links a:hover { color: var(--text); }
+    .nav-lang {
+      color: var(--primary); text-decoration: none; font-size: 13px;
+      border: 1px solid var(--primary-dim); border-radius: 4px;
+      padding: 2px 8px; transition: background 0.15s; white-space: nowrap;
+    }
+    .nav-lang:hover { background: #1f6feb22; }
 
     /* ── Hero ── */
     .hero {
@@ -185,12 +192,15 @@
 <nav class="nav">
   <div class="nav-inner">
     <a class="nav-logo" href="#top"><span class="icon">🔄</span>CodecFlow</a>
-    <ul class="nav-links">
-      <li><a href="#features">功能特性</a></li>
-      <li><a href="#formats">支持格式</a></li>
-      <li><a href="#faq">常见问题</a></li>
-      <li><a href="#unique">专业特色</a></li>
-    </ul>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#features">功能特性</a></li>
+        <li><a href="#formats">支持格式</a></li>
+        <li><a href="#unique">专业特色</a></li>
+        <li><a href="#faq">常见问题</a></li>
+      </ul>
+      <a class="nav-lang" href="./index_en.html">English</a>
+    </div>
   </div>
 </nav>
 
@@ -609,7 +619,7 @@
 <!-- ── Footer ── -->
 <footer class="footer">
   <p>CodecFlow · macOS 专业视频格式转换工具</p>
-  <p style="margin-top:8px;">隐私优先 · 完全离线 · 一次性买断 · <a href="./privacy.html">隐私政策</a></p>
+  <p style="margin-top:8px;">隐私优先 · 完全离线 · 一次性买断 · <a href="./privacy.html">隐私政策</a> · <a href="./index_en.html">English</a></p>
 </footer>
 
 <script>

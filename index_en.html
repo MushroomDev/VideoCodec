@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodecFlow — Professional Video Converter for macOS</title>
+  <meta name="description" content="CodecFlow is a professional video converter for macOS. Full format support, hardware acceleration, AES video encryption, subtitle handling — privacy-first, fully offline.">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-hover: #21262d;
+      --border: #30363d;
+      --primary: #58a6ff;
+      --primary-dim: #1f6feb;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --accent-green: #3fb950;
+      --accent-purple: #bc8cff;
+      --accent-orange: #d2991d;
+      --radius: 8px;
+      --max-width: 960px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13, 17, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px;
+    }
+    .nav-logo {
+      font-size: 20px; font-weight: 700;
+      color: var(--primary); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo .icon { font-size: 26px; }
+    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none; font-size: 14px;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-lang {
+      color: var(--primary); text-decoration: none; font-size: 13px;
+      border: 1px solid var(--primary-dim); border-radius: 4px;
+      padding: 2px 8px; transition: background 0.15s; white-space: nowrap;
+    }
+    .nav-lang:hover { background: #1f6feb22; }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center; padding: 80px 24px 60px;
+      max-width: 720px; margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 48px; font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .hero .subtitle {
+      font-size: 20px; color: var(--text-dim); margin-bottom: 32px;
+    }
+    .badge-row {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .badge.m1 { border-color: #1f6feb44; color: var(--primary); }
+    .badge.m2 { border-color: #3fb95044; color: var(--accent-green); }
+    .badge.m3 { border-color: #d2991d44; color: var(--accent-orange); }
+
+    /* ── Sections ── */
+    .section {
+      max-width: var(--max-width);
+      margin: 0 auto; padding: 48px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .section h2 {
+      font-size: 28px; font-weight: 700; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section .desc {
+      color: var(--text-dim); font-size: 15px; margin-bottom: 32px;
+    }
+
+    /* ── Feature Grid ── */
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .feature-card:hover { border-color: var(--primary-dim); background: var(--surface-hover); }
+    .feature-card .icon { font-size: 28px; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 16px; margin-bottom: 6px; }
+    .feature-card p { font-size: 13px; color: var(--text-dim); }
+
+    /* ── Format Table ── */
+    .format-table {
+      width: 100%; border-collapse: collapse; font-size: 14px;
+    }
+    .format-table th, .format-table td {
+      padding: 10px 16px; border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .format-table th {
+      font-weight: 600; color: var(--text-dim); font-size: 12px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .format-table tr:hover { background: var(--surface-hover); }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+    .tag.green { background: #2ea04333; color: var(--accent-green); }
+    .tag.blue { background: #1f6feb33; color: var(--primary); }
+    .tag.yellow { background: #d2991d33; color: var(--accent-orange); }
+
+    /* ── FAQ ── */
+    .faq-list { display: flex; flex-direction: column; gap: 4px; }
+    .faq-item { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .faq-q {
+      width: 100%; background: var(--surface); border: none; color: var(--text);
+      padding: 16px 20px; text-align: left; font-size: 15px; font-family: inherit;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; transition: background 0.15s;
+    }
+    .faq-q:hover { background: var(--surface-hover); }
+    .faq-q .arrow { transition: transform 0.2s; font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
+    .faq-item.open .faq-q .arrow { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    .faq-item.open .faq-a { max-height: 600px; }
+    .faq-a-inner {
+      padding: 0 20px 20px 20px; font-size: 14px; color: var(--text-dim); line-height: 1.8;
+    }
+    .faq-a-inner code {
+      background: var(--surface-hover); padding: 2px 6px; border-radius: 4px;
+      font-size: 13px; color: var(--accent-orange);
+    }
+    .faq-a-inner pre {
+      background: var(--surface-hover); padding: 12px 16px; border-radius: 6px;
+      overflow-x: auto; margin: 8px 0; font-size: 13px; color: var(--accent-green);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; padding: 40px 24px;
+      border-top: 1px solid var(--border); color: var(--text-dim); font-size: 13px;
+    }
+    .footer a { color: var(--primary); text-decoration: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 32px; }
+      .hero .subtitle { font-size: 16px; }
+      .nav-links { display: none; }
+      .section h2 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#top"><span class="icon">🔄</span>CodecFlow</a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#formats">Formats</a></li>
+        <li><a href="#unique">Pro Features</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <a class="nav-lang" href="./index.html">中文</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero" id="top">
+  <h1>CodecFlow</h1>
+  <p class="subtitle">Professional Video Converter for macOS — All Formats, Fast, Secure</p>
+  <div class="badge-row">
+    <span class="badge m1">🍎 Apple Silicon ARM64</span>
+    <span class="badge m2">⚡ VideoToolbox Hardware Acceleration</span>
+    <span class="badge m3">🔒 AES Video Encryption</span>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="section" id="features">
+  <h2>✨ Features</h2>
+  <p class="desc">More than just format conversion — CodecFlow is your all-in-one video processing suite for macOS, covering transcoding, encryption, subtitles, and professional parameter control.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">🎬</div>
+      <h3>Universal Format Support</h3>
+      <p>Handles MP4, MKV, MOV, AVI, WebM, FLV, TS and 30+ container formats — with H.264, H.265, VP9, AV1, ProRes and all major codecs.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">⚡</div>
+      <h3>Hardware Acceleration</h3>
+      <p>Native Apple Silicon optimization for M1/M2/M3/M4. VideoToolbox hardware encoding/decoding activates automatically — up to 5× faster with far less heat.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📦</div>
+      <h3>Smart Batch Processing</h3>
+      <p>Drop an entire folder and let CodecFlow handle the queue. Pause, resume, and skip individual files. Auto-scales to your CPU core count — never freezes your Mac.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🎚️</div>
+      <h3>Pro Parameter Control</h3>
+      <p>Bitrate, resolution, frame rate, GOP, CRF, and encoding presets are all fully exposed — from quick social shares to visually lossless archiving.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💬</div>
+      <h3>Full Subtitle Support</h3>
+      <p>Preserve soft subtitles or burn-in hard subtitles. Supports SRT, ASS, PGS and more. Select individual audio tracks with ease.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🖥️</div>
+      <h3>True macOS Native</h3>
+      <p>Built with AppKit — not Electron. Dark Mode, sandboxed security, drag-and-drop import, and Touch Bar support all feel exactly right.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Supported Formats ── -->
+<section class="section" id="formats">
+  <h2>📋 Supported Formats</h2>
+  <p class="desc">CodecFlow covers 30+ container formats and the full range of modern codecs — from everyday sharing to professional post-production.</p>
+
+  <h3 style="font-size:17px; margin-bottom:12px; color: var(--primary);">Container Formats</h3>
+  <table class="format-table">
+    <thead>
+      <tr><th>Format</th><th>Extension</th><th>Input</th><th>Output</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>MP4</td><td>.mp4</td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Most universal format</td></tr>
+      <tr><td>MKV</td><td>.mkv</td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Multi-track &amp; subtitles</td></tr>
+      <tr><td>MOV</td><td>.mov</td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Apple ecosystem preferred</td></tr>
+      <tr><td>WebM</td><td>.webm</td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Web-optimized open format</td></tr>
+      <tr><td>AVI</td><td>.avi</td><td><span class="tag green">✓</span></td><td><span class="tag yellow">Limited</span></td><td>Legacy format</td></tr>
+      <tr><td>FLV</td><td>.flv</td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td></td></tr>
+      <tr><td>TS / M2TS</td><td>.ts / .m2ts</td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Blu-ray transport stream</td></tr>
+      <tr><td>GIF</td><td>.gif</td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Animated GIF generation</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:17px; margin:28px 0 12px; color: var(--accent-purple);">Video Codecs</h3>
+  <table class="format-table">
+    <thead>
+      <tr><th>Codec</th><th>Type</th><th>Encode</th><th>Decode</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>H.264 / AVC</td><td><span class="tag blue">Mainstream</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Best universal compatibility</td></tr>
+      <tr><td>H.265 / HEVC</td><td><span class="tag blue">Mainstream</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>High-efficiency compression</td></tr>
+      <tr><td>VP9</td><td><span class="tag blue">Mainstream</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>YouTube preferred</td></tr>
+      <tr><td>AV1</td><td><span class="tag blue">Mainstream</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Next-gen open codec</td></tr>
+      <tr><td>ProRes</td><td><span class="tag yellow">Pro</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Apple professional codec</td></tr>
+      <tr><td>DNxHD / DNxHR</td><td><span class="tag yellow">Pro</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>Avid broadcast standard</td></tr>
+      <tr><td>VP8</td><td><span class="tag blue">Mainstream</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td></td></tr>
+      <tr><td>MPEG-4 / MPEG-2</td><td><span class="tag blue">Mainstream</span></td><td><span class="tag green">✓</span></td><td><span class="tag green">✓</span></td><td>DVD compatible</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── Unique Features ── -->
+<section class="section" id="unique">
+  <h2>🔬 Pro Features</h2>
+  <p class="desc">These are the capabilities that set CodecFlow apart from every other converter on the Mac — built for users who demand more.</p>
+
+  <!-- Feature #1: Encryption -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🔒</span> AES Video Encryption &amp; Decryption</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        Almost no other converter offers built-in encryption. CodecFlow ships a full <strong>AES-128</strong> and <strong>AES-256</strong> encryption engine — so you can protect your video content at the same time you convert it.
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li>Your encryption key and IV stay on your device — never uploaded anywhere</li>
+        <li>Encrypted files can be decrypted and played by VLC, IINA, mpv, and other AES-aware players</li>
+        <li>Ideal for private video archiving, copyright-protected distribution, and confidential footage</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🔑</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:15px;">AES-256</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Military-grade encryption</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">AES-128</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">High-speed everyday encryption</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #2: Hardware Acceleration -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap; flex-direction:row-reverse;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">⚡</span> Intelligent Hardware Acceleration</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        On Apple Silicon, CodecFlow automatically activates <strong>VideoToolbox</strong> hardware codecs — no manual setup required. Compared to software-only encoding, you get up to <strong>5× faster</strong> conversion with dramatically cooler thermals and quieter fans.
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li>Auto-detects hardware capability and selects the best encoder automatically</li>
+        <li>Hybrid mode supported: hardware decode + software encode (or vice versa)</li>
+        <li>Intel Macs benefit from Quick Sync hardware acceleration too</li>
+        <li>Need maximum compression quality? Switch to pure software encoding with one click</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🚀</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:24px;">3-5×</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Encoding speed boost</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">M1 ~ M4</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">All Apple Silicon chips</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #3: Subtitle & Multi-track -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">💬</span> Subtitle Burn-in &amp; Multi-track Audio</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        Most lightweight converters silently strip subtitles and extra audio tracks. CodecFlow preserves everything and gives you full control over what to do with it.
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li><strong>Keep soft subtitles</strong>: subtitle streams remain as independent tracks — viewers can toggle them on/off</li>
+        <li><strong>Burn-in hard subtitles</strong>: permanently embed subs into the video frame for social media distribution</li>
+        <li>Supports SRT, ASS, PGS, mov_text and all major subtitle formats</li>
+        <li>Visual multi-track audio management: pick and mix any combination of language tracks</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">📝</div>
+      <div style="color:var(--accent-purple); font-weight:600; font-size:15px;">SRT · ASS · PGS</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">All subtitle formats</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">Multi-track Audio</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Select &amp; mix freely</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #4: Professional Codecs -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap; flex-direction:row-reverse;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🎞️</span> Professional &amp; Next-gen Codec Coverage</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        Most converters stop at consumer formats. CodecFlow also supports <strong>ProRes, DNxHD/HR, and AV1</strong> — covering professional post-production, broadcast archiving, and future-proof delivery.
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li><strong>Apple ProRes</strong> (422 / 4444 / XQ): the go-to intermediate codec for Final Cut Pro workflows</li>
+        <li><strong>Avid DNxHD / DNxHR</strong>: broadcast and professional production industry standard</li>
+        <li><strong>AV1</strong>: next-gen open codec — same quality at roughly half the file size of H.264</li>
+        <li><strong>Animated GIF</strong>: convert any video clip to high-quality GIF in one click</li>
+        <li><strong>WebM (VP8/VP9)</strong>: the open web format — a far better alternative to GIF for web publishing</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🎯</div>
+      <div style="color:var(--accent-purple); font-weight:600; font-size:15px;">ProRes 422/4444</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Apple pro codec</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">DNxHD · AV1</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Broadcast + next-gen</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #5: Dual Encoding Modes -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🎚️</span> Dual Encoding Modes: Bitrate vs. Quality</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        Most tools give you vague "High / Medium / Low" quality presets. CodecFlow exposes real professional encoding controls.
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li><strong>Target Bitrate Mode (ABR/VBR)</strong>: precisely control output file size — essential when bandwidth or storage is limited</li>
+        <li><strong>Constant Quality Mode (CRF)</strong>: set a quality target; the encoder handles bitrate automatically. CRF 18 ≈ visually lossless</li>
+        <li><strong>Encoding Presets</strong>: 10 levels from ultrafast to veryslow — trade encoding time for quality, exactly as you choose</li>
+        <li><strong>GOP / Keyframe Interval</strong>: tune random-access performance for streaming delivery scenarios</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">📐</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:15px;">Bitrate Mode</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Precise file size control</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">CRF Mode</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Constant quality · visually lossless</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature #6: Privacy -->
+  <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; flex-direction:row-reverse;">
+    <div style="flex:1; min-width:280px;">
+      <h3 style="font-size:20px; margin-bottom:8px;"><span style="font-size:28px;">🛡️</span> Privacy First · 100% Offline</h3>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.9;">
+        CodecFlow is a <strong>100% offline</strong> local application. Your video files never leave your Mac — nothing is ever sent to any server.
+      </p>
+      <ul style="color:var(--text-dim); font-size:14px; margin-top:12px; padding-left:20px; line-height:2;">
+        <li>No account required. No internet connection required. All features work offline</li>
+        <li>macOS sandboxing ensures the app can only access files you explicitly allow</li>
+        <li>Encryption keys are used locally only — never uploaded or synced anywhere</li>
+        <li>Zero analytics, zero telemetry, zero ads — you paid once for the full product</li>
+      </ul>
+    </div>
+    <div style="flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; min-width:200px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:8px;">🏠</div>
+      <div style="color:var(--accent-green); font-weight:600; font-size:15px;">100% Offline</div>
+      <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Your data stays on your Mac</div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div style="color:var(--primary); font-weight:600; font-size:15px;">One-time Purchase</div>
+        <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">No subscription · No ads</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── FAQ ── -->
+<section class="section" id="faq">
+  <h2>❓ FAQ</h2>
+  <p class="desc">Click a question to expand the answer. If your issue isn't covered here, feel free to submit an Issue.</p>
+
+  <div class="faq-list">
+
+    <!-- Installation -->
+    <div class="faq-item">
+      <button class="faq-q"><span>What are the system requirements?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p><strong>Minimum requirements:</strong></p>
+        <ul>
+          <li>macOS 12.0 Monterey or later</li>
+          <li>Apple Silicon (M1 / M2 / M3 / M4) or Intel Mac</li>
+          <li>200 MB available disk space</li>
+        </ul>
+        <p><strong>Recommended:</strong></p>
+        <ul>
+          <li>macOS 14.0 Sonoma or later</li>
+          <li>Apple Silicon M2 or later (for best VideoToolbox hardware acceleration)</li>
+        </ul>
+        <p>CodecFlow is natively optimized for Apple Silicon and performs best on those devices. Intel Macs are fully supported.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>Does CodecFlow run via Rosetta?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>CodecFlow is a Universal Binary containing both ARM64 and x86_64 slices.</p>
+        <p>On Apple Silicon Macs it runs as a native ARM64 process — <strong>not</strong> through Rosetta translation — delivering peak performance and full VideoToolbox hardware acceleration.</p>
+      </div></div>
+    </div>
+
+    <!-- Conversion issues -->
+    <div class="faq-item">
+      <button class="faq-q"><span>Why is there no audio in my converted video?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>The most common causes:</p>
+        <ol>
+          <li><strong>Audio track not selected</strong>: Check the "Audio" tab in the settings panel and confirm the track you want is checked.</li>
+          <li><strong>Incompatible audio codec</strong>: Some source audio codecs (e.g. DTS, AC-3, E-AC3) are not supported in certain output containers. Switch your output audio codec to AAC.</li>
+          <li><strong>Corrupt source audio</strong>: In rare cases the source file itself has a damaged audio track. Try playing the original file in IINA or VLC to confirm.</li>
+        </ol>
+        <p>If the problem persists, try outputting to an <code>MKV</code> container with <code>AAC</code> audio — this is the most compatible combination.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>The converted video looks worse than the original — how do I fix this?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Quality loss is almost always caused by encoding parameters that are set too low. Try:</p>
+        <ul>
+          <li><strong>Raise the bitrate</strong>: In "Video Settings", increase the target bitrate. A safe starting point: 8–12 Mbps for 1080p, 30–50 Mbps for 4K.</li>
+          <li><strong>Switch to CRF mode</strong>: Set CRF to 18–23 (lower = higher quality). CRF 18 is essentially visually lossless.</li>
+          <li><strong>Use a slower preset</strong>: Changing from "veryfast" to "medium" or "slow" significantly improves quality at the cost of longer encoding time.</li>
+          <li><strong>Keep the original resolution</strong>: Do not scale the video unless you have a specific reason to.</li>
+        </ul>
+        <p>Pro tip: CRF 18 + slow preset ≈ visually lossless. Perfect for archiving.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>Does CodecFlow preserve subtitles?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Yes. CodecFlow supports the following subtitle handling options:</p>
+        <ul>
+          <li><strong>Pass-through soft subtitles</strong>: When outputting to MKV, subtitle streams (SRT / ASS / PGS) are preserved as independent tracks.</li>
+          <li><strong>Burn-in (hard subtitles)</strong>: Permanently bake subtitles into the video frame — great for platforms that don't support soft subtitles.</li>
+          <li>MP4 supports mov_text subtitles (limited compatibility); MKV supports virtually all subtitle formats.</li>
+        </ul>
+        <p>Best compatibility: output to MKV and keep the original subtitle stream, or burn-in to MP4 for wide playback support.</p>
+      </div></div>
+    </div>
+
+    <!-- Performance -->
+    <div class="faq-item">
+      <button class="faq-q"><span>When does VideoToolbox hardware acceleration kick in?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>VideoToolbox hardware acceleration activates automatically when <strong>all</strong> of the following are true:</p>
+        <ol>
+          <li>Your device is Apple Silicon (M1/M2/M3/M4) or an Intel Mac with Quick Sync support</li>
+          <li>Output codec is set to <code>H.264</code> or <code>H.265 (HEVC)</code></li>
+          <li>"Prefer hardware acceleration" is enabled in Settings</li>
+        </ol>
+        <p>Hardware acceleration delivers 3–5× encoding speed with much lower CPU load and heat. Note: hardware encoding typically has slightly lower compression efficiency than software codecs (x264/x265) — best when speed is the priority.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>CPU usage is too high during batch conversion. How do I reduce it?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Several options:</p>
+        <ul>
+          <li>In Settings, lower the "Parallel tasks" count. The default is auto (= CPU core count); try setting it to 1 or 2.</li>
+          <li>Enable VideoToolbox hardware acceleration to offload encoding to dedicated hardware.</li>
+          <li>Use a faster encoding preset (ultrafast / superfast / veryfast) to reduce per-frame complexity.</li>
+        </ul>
+        <p>CodecFlow's task scheduler automatically balances system load. You can also use Activity Monitor to limit the app's CPU scheduling priority.</p>
+      </div></div>
+    </div>
+
+    <!-- Encryption -->
+    <div class="faq-item">
+      <button class="faq-q"><span>How does the encryption feature work? Is it secure?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>CodecFlow uses industry-standard AES encryption:</p>
+        <ul>
+          <li><strong>AES-128</strong>: 128-bit key, faster encryption — ideal for everyday use.</li>
+          <li><strong>AES-256</strong>: 256-bit key, stronger security — recommended for sensitive content.</li>
+          <li>The encryption key and IV (Initialization Vector) are entered by you and used only on your device.</li>
+          <li>Encrypted videos require the same key to be provided in CodecFlow or any other AES-capable player.</li>
+        </ul>
+        <p><strong>⚠️ Important</strong>: If you lose the key, the video content cannot be recovered. Store your key safely — CodecFlow never stores or transmits it.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>Can other players play AES-encrypted videos?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>AES-encrypted MP4/MKV files are compatible with the following players:</p>
+        <ul>
+          <li>✅ VLC Media Player</li>
+          <li>✅ IINA (macOS)</li>
+          <li>✅ mpv</li>
+          <li>✅ Command-line tools that support AES decryption</li>
+          <li>❌ QuickTime Player (does not support encrypted streams)</li>
+          <li>❌ Safari inline player</li>
+        </ul>
+        <p>Playback requires the decryption key, typically supplied via an HLS key file or an m3u8 playlist.</p>
+      </div></div>
+    </div>
+
+    <!-- Errors -->
+    <div class="faq-item">
+      <button class="faq-q"><span>Conversion failed with "Unsupported codec" — what should I do?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>This error means the source file uses a rare or unusual codec. Try the following:</p>
+        <ol>
+          <li>Make sure you have the full version of CodecFlow (not Lite), which includes the complete codec set.</li>
+          <li>If the file uses a proprietary format (some surveillance cameras, professional RAW video), try converting it to an intermediate format first using another tool.</li>
+          <li>Use MediaInfo to identify the exact codec of the source file, then submit a GitHub Issue with the error message and codec details — we'll evaluate adding support in a future update.</li>
+        </ol>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span>The output file is larger than the original — is that normal?</span><span class="arrow">▼</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>This commonly happens when:</p>
+        <ul>
+          <li>The source was encoded with highly efficient compression (e.g. H.265 at a low bitrate), but the output codec or bitrate setting is less efficient.</li>
+          <li>The source is a heavily compressed streaming video and you re-encoded it with a high bitrate setting.</li>
+        </ul>
+        <p>To fix it:</p>
+        <ul>
+          <li>Set the target bitrate to 60–80% of the source file's bitrate.</li>
+          <li>Use H.265 (HEVC) instead of H.264 — roughly 40% smaller at equivalent quality.</li>
+          <li>Switch to CRF mode and set CRF to 20–26 for automatic quality/size balancing.</li>
+        </ul>
+      </div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <p>CodecFlow · Professional Video Converter for macOS</p>
+  <p style="margin-top:8px;">Privacy First · 100% Offline · One-time Purchase · <a href="./privacy_en.html">Privacy Policy</a></p>
+</footer>
+
+<script>
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
